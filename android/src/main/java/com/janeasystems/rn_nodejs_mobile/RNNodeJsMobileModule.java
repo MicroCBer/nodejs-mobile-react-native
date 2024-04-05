@@ -73,7 +73,7 @@ public class RNNodeJsMobileModule extends ReactContextBaseJavaModule implements 
     filesDirPath = reactContext.getFilesDir().getAbsolutePath();
 
     // The paths where we expect the node project assets to be at runtime.
-    nodeJsProjectPath = filesDirPath + "/" + NODEJS_PROJECT_DIR;
+    nodeJsProjectPath = filesDirPath + "/";
     builtinModulesPath = filesDirPath + "/" + NODEJS_BUILTIN_MODULES;
     trashDirPath = filesDirPath + "/" + TRASH_DIR;
     nativeAssetsPath = BUILTIN_NATIVE_ASSETS_PREFIX + getCurrentABIName();
@@ -382,50 +382,7 @@ public class RNNodeJsMobileModule extends ReactContextBaseJavaModule implements 
 
 
   private void copyNodeJsAssets() throws IOException {
-    assetManager = getReactApplicationContext().getAssets();
 
-    // If a previous project folder is present, move it to the trash.
-    File nodeDirReference = new File(nodeJsProjectPath);
-    if (nodeDirReference.exists()) {
-      File trash = new File(trashDirPath);
-      nodeDirReference.renameTo(trash);
-    }
-
-    // Load the nodejs project's folder and file lists.
-    ArrayList<String> dirs = readFileFromAssets("dir.list");
-    ArrayList<String> files = readFileFromAssets("file.list");
-
-    // Copy the nodejs project files to the application's data path.
-    if (dirs.size() > 0 && files.size() > 0) {
-      Log.d(TAG, "Node assets copy using pre-built lists");
-      for (String dir : dirs) {
-        new File(filesDirPath + "/" + dir).mkdirs();
-      }
-
-      for (String file : files) {
-        String src = file;
-        String dest = filesDirPath + "/" + file;
-        copyAsset(src, dest);
-      }
-    } else {
-      Log.d(TAG, "Node assets copy enumerating APK assets");
-      copyAssetFolder(NODEJS_PROJECT_DIR, nodeJsProjectPath);
-    }
-
-    copyNativeAssetsFrom();
-
-    // Do the builtin-modules copy too.
-    // If a previous built-in modules folder is present, delete it.
-    File modulesDirReference = new File(builtinModulesPath);
-    if (modulesDirReference.exists()) {
-      deleteFolderRecursively(modulesDirReference);
-    }
-
-    // Copy the nodejs built-in modules to the application's data path.
-    copyAssetFolder("builtin_modules", builtinModulesPath);
-
-    saveLastUpdateTime();
-    Log.d(TAG, "Node assets copy completed successfully");
   }
 
   private ArrayList<String> readFileFromAssets(String filename){
